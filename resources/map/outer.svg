@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1920 1080" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <rect id="outer" x="0" y="0" width="1920" height="1080"/>
+    <g id="outer1" serif:id="outer">
+        <g id="outer2" serif:id="outer" transform="matrix(1.14879,0,0,1.14879,50.5729,-63.8628)">
+            <path d="M1573.62,55.592L1573.62,995.714L9.662,995.714L9.662,55.592L1573.62,55.592ZM946.935,626.046L946.935,696.794L924.779,696.794L924.779,857.886L1341.7,857.886L1341.7,192.11L563.005,192.11L563.005,274.165L544.755,274.165L544.755,192.11L189.902,192.11L189.902,539.96L761.33,539.96L761.33,626.046L946.935,626.046Z" style="fill:white;"/>
+        </g>
+    </g>
+    <g id="Ebene1">
+    </g>
+</svg>
