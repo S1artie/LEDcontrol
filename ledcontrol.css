@@ -15,10 +15,12 @@ body {
     height: 100%;
 }
 
-#plan {
+#plancontainer {
     flex: 3;
     background-color: black;
     display: flex;
+    align-items: center;
+    align-content: stretch;
 }
 
 #controls {
@@ -26,12 +28,24 @@ body {
     background-color: black;
 }
 
-#walls {
-    width: 100%;
-    background-image: url('resources/map/walls.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+#plan {
+    flex-grow: 1;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
 }
 
+#walls {
+    margin: 0px;
+    padding: 0px;
+    display: block;
+}
 
+#lightpath {
+    margin: 0px;
+    padding: 0px;
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}

@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="100%" height="100%" viewBox="0 0 1920 1080" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <rect id="lights" x="0" y="0" width="1920" height="1080"/>
-    <g id="lights1" serif:id="lights">
-        <path d="M1581.68,166.957L707.831,166.957M707.831,261.968L666.756,261.968M666.756,166.998L278.977,166.998M278.977,546.146L935.205,546.146M935.205,644.928L1149.29,644.928M1149.29,746.65L1123.06,746.65M1123.06,911.302L1581.41,911.302" style="fill:none;"/>
-    </g>
-    <g id="Ebene2">
-    </g>
-    <g id="Ebene1">
+    <g id="lightpath" serif:id="lights">
+        <path d="M1581.68,166.957L707.831,166.957L707.831,261.968L666.756,261.968L666.756,166.998L278.977,166.998L278.977,546.146L935.205,546.146L935.205,644.928L1149.29,644.928L1149.29,746.65L1123.06,746.65L1123.06,911.302L1581.41,911.302L1581.68,166.957" style="fill:none;stroke:red;stroke-width:4"/>
     </g>
 </svg>
