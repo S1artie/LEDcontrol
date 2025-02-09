@@ -7,7 +7,16 @@
     <body>
         <div id="plancontainer">
             <div id="plan">
-                <img id="walls" src="resources/map/walls.svg">
+                <svg id="outer" width="100%" height="100%" viewBox="0 0 1920 1080" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+                    <g id="outer0" serif:id="outer" transform="matrix(1.14879,0,0,1.14879,50.5729,-63.8628)">
+                        <path d="M1573.62,55.592L1573.62,995.714L9.662,995.714L9.662,55.592L1573.62,55.592ZM946.935,626.046L946.935,696.794L924.779,696.794L924.779,857.886L1341.7,857.886L1341.7,192.11L563.005,192.11L563.005,274.165L544.755,274.165L544.755,192.11L189.902,192.11L189.902,539.96L761.33,539.96L761.33,626.046L946.935,626.046Z" style="fill:white;"/>
+                    </g>
+                </svg>
+                <svg id="walls" width="100%" height="100%" viewBox="0 0 1920 1080" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+                    <g id="walls0" serif:id="walls" transform="matrix(1.14879,0,0,1.14879,50.5729,-63.8628)">
+                        <path d="M151.941,557.664L151.941,155.994L1379.72,155.994L1379.72,192.11L1379.6,192.11L1379.6,897.571L902.624,897.571L902.624,643.434L742.5,643.434L742.5,557.664L151.941,557.664ZM544.755,192.11L189.902,192.11L189.902,539.96L761.33,539.96L761.33,626.046L946.935,626.046L946.935,696.794L924.779,696.794L924.779,857.886L1341.7,857.886L1341.7,192.11L563.005,192.11L563.005,274.165L544.755,274.165L544.755,192.11Z" style="fill:white;"/>
+                    </g>
+                </svg>
                 <svg id="lightpath" width="100%" height="100%" viewBox="0 0 1920 1080" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
                     <g id="lightpath0" serif:id="lights">
                         <path d="M1581.68,166.957L707.831,166.957L707.831,261.968L666.756,261.968L666.756,166.998L278.977,166.998L278.977,546.146L935.205,546.146L935.205,644.928L1149.29,644.928L1149.29,746.65L1123.06,746.65L1123.06,911.302L1581.41,911.302L1581.68,166.957" style="fill:none;stroke:red;stroke-width:4"/>
@@ -16,8 +25,25 @@
             </div>
         </div>
         <div id="controls">
- 
+            <div id="colorpicker"></div>
         </div>
+        <svg style="display: none">
+            <filter id='noiseFilter'>
+                <!-- Generate noise -->
+                <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="1" result="noise" />
+                
+                <!-- Convert noise to grayscale -->
+                <feColorMatrix in="noise" type="matrix" 
+                    values="0 0 0 0 0
+                            0 0 0 0 0
+                            0 0 0 0 0
+                            0 0 0 1 0" result="alphaNoise"/>
+                
+                <!-- Apply noise as an alpha mask -->
+                <feComposite in="SourceGraphic" in2="alphaNoise" operator="in"/>
+            </filter>
+          </svg>
+        <script src="iro.min.js"></script>
         <script src="ledcontrol.js"></script>
     </body>
 </html>

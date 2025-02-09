@@ -26,6 +26,9 @@ body {
 #controls {
     flex: 1;
     background-color: black;
+    display: flex;
+    align-items: center;
+    align-content: stretch;
 }
 
 #plan {
@@ -33,19 +36,58 @@ body {
     margin: 0px;
     padding: 0px;
     position: relative;
+    clip-path: url(#clippath);
 }
 
-#walls {
-    margin: 0px;
-    padding: 0px;
-    display: block;
-}
-
-#lightpath {
+#outer {
     margin: 0px;
     padding: 0px;
     display: block;
     position: absolute;
     top: 0px;
     left: 0px;
+    filter: invert(100%);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+#walls {
+    margin: 0px;
+    padding: 0px;
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+#lightpath {
+    margin: 0px;
+    padding: 0px;
+    display: block;
+    opacity: 0.1;
+}
+
+#clippath {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    color: #000;
+    filter: invert(100%);
+}
+
+.light {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.0);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    opacity: 100%;
+    z-index: 500;
+}
+
+#colorpicker {
+    flex-grow: 1;
 }
