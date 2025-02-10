@@ -6,9 +6,9 @@ html {
 
 body {
     background-color: black;
-    display: flex;
-    align-items: stretch;
-    flex-direction: row;
+    display: grid;
+    grid-template-rows: 1fr 50px;
+    grid-template-columns: 3fr 1fr;
     gap: 20px;
     justify-content: space-between;
     width: 100%;
@@ -16,7 +16,8 @@ body {
 }
 
 #plancontainer {
-    flex: 3;
+    grid-column: 1;
+    grid-row: 1;
     background-color: black;
     display: flex;
     align-items: center;
@@ -24,11 +25,29 @@ body {
 }
 
 #controls {
-    flex: 1;
+    grid-column: 2;
+    grid-row: 1;
     background-color: black;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     align-content: stretch;
+    margin-right: 10px;
+}
+
+#globals {
+    grid-column: span 2;
+    grid-row: 2;
+}
+
+#colorPicker {
+    width: 100%;
+}
+#globalBrightnessPicker {
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #plan {
@@ -84,10 +103,8 @@ body {
     background: rgba(255, 255, 255, 0.0);
     position: absolute;
     transform: translate(-50%, -50%);
-    opacity: 100%;
+    opacity: 10%;
     z-index: 500;
+    mix-blend-mode: soft-light;
 }
 
-#colorpicker {
-    flex-grow: 1;
-}
