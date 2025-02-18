@@ -22,6 +22,7 @@ body {
     display: flex;
     align-items: center;
     align-content: stretch;
+    overflow: hidden;
 }
 
 #controls {
@@ -44,6 +45,7 @@ body {
 #colorPicker {
     width: 100%;
 }
+
 #globalBrightnessPicker {
     width: calc(100% - 20px);
     margin-left: 10px;
@@ -108,3 +110,21 @@ body {
     mix-blend-mode: soft-light;
 }
 
+#colorActions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#colorActions>button {
+    width: 100%;
+    background: none;
+    margin: 3px;
+    font-size: 20px;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 10px 3px;
+    color: white;
+}

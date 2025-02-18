@@ -61,37 +61,37 @@ function mulberry32(a) {
 
 // Create a total of 1120 light divs and distribute them evenly along the 
 // lightpath svg path.
-let lightColors = [];
-let totalLights = 1120; //1120;
-let noiseFilterCount = 10;
-let lightDivs = [];
+const lightColors = [];
+const totalLights = 1120; //1120;
+const noiseFilterCount = 10;
+const lightDivs = [];
 let globalBrightness = 1;
-let body = document.querySelector('body');
-let plan = document.querySelector('#plan');
-let lights = document.querySelector('#lights');
-let lightpath = document.querySelector('#lightpath>#lightpath0>path');
+const body = document.querySelector('body');
+const plan = document.querySelector('#plan');
+const lights = document.querySelector('#lights');
+const lightpath = document.querySelector('#lightpath>#lightpath0>path');
 
 function clearLights() {
     for (let i = 0; i < lightDivs.length; i++) {
         lightDivs[i].remove();
     }
-    lightDivs = [];
-    lightCoords = [];
+    lightDivs.length = 0;
+    lightCoords.length = 0;
 }
 
 function distributeLights() {
-    let lightpathLength = lightpath.getTotalLength();
-    let lightSpacing = lightpathLength / totalLights;
-    let lightSizeFactor = lightpath.getBoundingClientRect().width / 60;
-    let seededRand = mulberry32(totalLights);
-    let seededRandForNoise = mulberry32(totalLights);
+    const lightpathLength = lightpath.getTotalLength();
+    const lightSpacing = lightpathLength / totalLights;
+    const lightSizeFactor = lightpath.getBoundingClientRect().width / 60;
+    const seededRand = mulberry32(totalLights);
+    // const seededRandForNoise = mulberry32(totalLights);
     for (let i = 0; i < totalLights; i++) {
         if (lightColors.length <= i) {
             lightColors[i] = { r: 255, g: 0, b: 0, a: 1 };
         }
-        let lightpathPoint = lightpath.getPointAtLength(i * lightSpacing);
-        let documentPoint = lightpathPoint.matrixTransform(lightpath.getCTM());
-        let lightDiv = document.createElement('div');
+        const lightpathPoint = lightpath.getPointAtLength(i * lightSpacing);
+        const documentPoint = lightpathPoint.matrixTransform(lightpath.getCTM());
+        const lightDiv = document.createElement('div');
         lightDiv.classList.add('light');
         lightDiv.dataset.centerX = documentPoint.x;
         lightDiv.dataset.centerY = documentPoint.y;
@@ -114,14 +114,14 @@ function distributeLights() {
         lightDiv.style.filter = 'url(#noiseFilter' + i + ')';*/
 
         lightDivs[i] = lightDiv;
-        lights.appendChild(lightDiv);
     }
+    lights.append(...lightDivs);
 }
 
 function updateLight(index) {
     if (index !== undefined) {
-        let lightDiv = lightDivs[index];
-        let color = lightColors[index];
+        const lightDiv = lightDivs[index];
+        const color = lightColors[index];
         lightDiv.style.background = "radial-gradient(circle, rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + color.a + "), "
             + "rgba(0, 0, 0, 0.0) 100%)";
     } else {
@@ -131,26 +131,33 @@ function updateLight(index) {
     }
 }
 
+const alreadyProcessedElementsPerTouch = {};
+
 function setupLightTouchEvents() {
     plan.addEventListener('touchmove', function (event) {
-        let touches = event.touches;
+        const touches = event.touches;
         var indexStart = totalLights;
         var indexEnd = -1;
         for (let i = 0; i < touches.length; i++) {
-            let touch = touches[i];
-            let touchX = touch.clientX - plan.getBoundingClientRect().left;
-            let touchY = touch.clientY - plan.getBoundingClientRect().top;
-            let elementsAtTouch = document.elementsFromPoint(touch.clientX, touch.clientY);
-            for (let j = 0; j < elementsAtTouch.length; j++) {
-                let element = elementsAtTouch[j];
-                if (element.dataset.index !== undefined) {
-                    if (element.dataset.centerX - touchX < 10 && element.dataset.centerY - touchY < 10) {
-                        let color = colorPicker.color.rgba;
-                        lightColors[element.dataset.index] = color;
-                        updateLight(element.dataset.index);
-                        indexStart = Math.min(indexStart, element.dataset.index);
-                        indexEnd = Math.max(indexEnd, element.dataset.index);
+            const touch = touches[i];
+            if (alreadyProcessedElementsPerTouch[touch.identifier] === undefined) {
+                alreadyProcessedElementsPerTouch[touch.identifier] = {};
+            }
+            const touchX = touch.clientX - plan.getBoundingClientRect().left;
+            const touchY = touch.clientY - plan.getBoundingClientRect().top;
+            for (let j = 0; j < lightDivs.length; j++) {
+                const lightDiv = lightDivs[j];
+                if (Math.abs(lightDiv.dataset.centerX - touchX) < 10 && Math.abs(lightDiv.dataset.centerY - touchY) < 10) {
+                    const index = lightDiv.dataset.index;
+                    if (alreadyProcessedElementsPerTouch[touch.identifier][index] === undefined) {
+                        alreadyProcessedElementsPerTouch[touch.identifier][index] = true;
+                    } else {
+                        continue;
                     }
+                    lightColors[index] = blendColors(lightColors[index], colorPicker.color.rgba);
+                    updateLight(index);
+                    indexStart = Math.min(indexStart, index);
+                    indexEnd = Math.max(indexEnd, index);
                 }
             }
         }
@@ -158,21 +165,102 @@ function setupLightTouchEvents() {
             sendColors(indexStart, indexEnd);
         }
     });
+    plan.addEventListener('touchend', function (event) {
+        for (let i = 0; i < event.changedTouches.length; i++) {
+            delete alreadyProcessedElementsPerTouch[event.changedTouches[i].identifier];
+        }
+    });
+}
+
+function blendColors(currentColor, newColor) {
+    const opacity = newColor.a; // Extract alpha value
+    return {
+        r: Math.round(newColor.r * opacity + currentColor.r * (1 - opacity)),
+        g: Math.round(newColor.g * opacity + currentColor.g * (1 - opacity)),
+        b: Math.round(newColor.b * opacity + currentColor.b * (1 - opacity)),
+        a: 1.0
+    };
+}
+
+function fillCurrentColor() {
+    for (let i = 0; i < lightColors.length; i++) {
+        lightColors[i] = blendColors(lightColors[i], colorPicker.color.rgba);
+    }
+    updateLight();
+    sendColors();
 }
 
 
 // WLED communication
 // ---------------------------------------------------------------------------
 
-//let wledSegments = [{index: 0, start: 0, count: 560}, {index: 0, start: 560, count: 560}];
-let wledSegments = [{ index: 0, start: 0, count: 140 }];
-let wledHost = "wled2.fritz.box";
-let wledPort = 80;
-let wledRequestQueue = [];
+const wledSegments = [{index: 0, start: 0, count: 560}, {index: 1, start: 560, count: 560}];
+//const wledSegments = [{ index: 0, start: 0, count: 140 }];
+const wledHost = "wled2.fritz.box";
+const wledPort = 80;
+const wledRequestQueue = [];
 let wledRequestInFlight = null;
 
+function sendGlobalBrightness() {
+    const newBrightness = Math.round(globalBrightness * 255);
+    sendWledRequest(JSON.stringify({ bri: newBrightness }));
+}
+
+function sendColors(startIndex, endIndex) {
+    var blocks = [];
+    var block = null;
+    if (startIndex === undefined) {
+        startIndex = 0;
+    }
+    if (endIndex === undefined) {
+        endIndex = lightColors.length;
+    }
+
+    var currentSegment = -1;
+    for (let i = 0; i < wledSegments.length; i++) {
+        const segment = wledSegments[i];
+        for (let j = 0; j < segment.count; j++) {
+            const index = segment.start + j
+            if (index < startIndex || index > endIndex) {
+                continue;
+            }
+
+            const color = lightColors[index];
+            if (currentSegment != i) {
+                if (block !== null) {
+                    blocks.push(block);
+                }
+                block = { seg: { "id": i, "i": [] } };
+                currentSegment = i;
+                block.seg.i = [j];
+            }
+            if (block.seg.i.length >= 256) {
+                blocks.push(block);
+                block = { seg: { "id": i, "i": [] } };
+                block.seg.i = [j];
+            }
+
+            block.seg.i.push(color.r.toString(16).toUpperCase().padStart(2, '0') + color.g.toString(16).toUpperCase().padStart(2, '0') + color.b.toString(16).toUpperCase().padStart(2, '0'));
+        }
+        blocks.push(block);
+        block = null;
+    }
+    if (block) {
+        blocks.push(block);
+    }
+
+    for (let i = 0; i < blocks.length; i++) {
+        const block = blocks[i];
+        if (block && block.seg.i.length > 1) {
+            sendWledRequest(JSON.stringify(block));
+        }
+    }
+}
+
+
+
 function sendWledRequest(jsonRequest) {
-    let xhrFunc = function () {
+    const xhrFunc = function () {
         fetch('http://' + wledHost + ":" + wledPort + '/json/state', {
             method: 'POST',
             headers: {
@@ -184,69 +272,12 @@ function sendWledRequest(jsonRequest) {
             sendRequestQueue();
         }).catch(error => {
             wledRequestInFlight = null;
+            sendRequestQueue();
         });
     }
-    wledRequestQueue.push(xhrFunc);
-}
 
-function sendGlobalBrightness() {
-    let newBrightness = Math.round(globalBrightness * 255);
-    sendWledRequest(JSON.stringify({ bri: newBrightness }));
-}
-
-function sendColors(startIndex, endIndex) {
-    var blocks = [];
-    var block = null;
-    if (startIndex !== undefined) {
-        for (let i = startIndex; i < endIndex; i++) {
-            let color = lightColors[i];
-            if (block === null) {
-                block = { seg: { "i": [] } };
-                block.seg.i = [i];
-            }
-            block.seg.i.push(color.r.toString(16).toUpperCase().padStart(2, '0') + color.g.toString(16).toUpperCase().padStart(2, '0') + color.b.toString(16).toUpperCase().padStart(2, '0'));
-            if (block.seg.i.length >= 256) {
-                blocks.push(block);
-                block = null;
-            }
-        }
-        if (block !== null) {
-            blocks.push(block);
-        }
-    } else {
-        var currentSegment = -1;
-        for (let i = 0; i < wledSegments.length; i++) {
-            let segment = wledSegments[i];
-            for (let j = 0; j < segment.count; j++) {
-                let color = lightColors[segment.start + j];
-
-                if (currentSegment != i) {
-                    if (block !== null) {
-                        blocks.push(block);
-                    }
-                    block = { seg: { "i": [] } };
-                    currentSegment = i;
-                    block.seg.i = [j];
-                }
-                if (block.seg.i.length >= 256) {
-                    blocks.push(block);
-                    block = { seg: { "i": [] } };
-                    block.seg.i = [j];
-                }
-
-                block.seg.i.push(color.r.toString(16).toUpperCase().padStart(2, '0') + color.g.toString(16).toUpperCase().padStart(2, '0') + color.b.toString(16).toUpperCase().padStart(2, '0'));
-            }
-            blocks.push(block);
-            block = null;
-        }
-        if (block !== null) {
-            blocks.push(block);
-        }
-    }
-    for (let i = 0; i < blocks.length; i++) {
-        let block = blocks[i];
-        sendWledRequest(JSON.stringify(block));
-    }
+    //wledRequestQueue.push(xhrFunc);
+    console.info("Sending request: " + jsonRequest);
 }
 
 function sendRequestQueue() {
@@ -255,7 +286,7 @@ function sendRequestQueue() {
     }
 
     if (wledRequestQueue.length > 0) {
-        let xhrFunc = wledRequestQueue.shift();
+        const xhrFunc = wledRequestQueue.shift();
         wledRequestInFlight = xhrFunc;
         xhrFunc();
     }
