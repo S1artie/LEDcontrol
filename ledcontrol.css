@@ -35,11 +35,13 @@ body {
     justify-content: center;
     align-content: stretch;
     margin-right: 10px;
+    padding-right: 10px;
 }
 
 #globals {
     grid-column: span 2;
     grid-row: 2;
+    color: white;
 }
 
 #colorPicker {
@@ -58,6 +60,7 @@ body {
     padding: 0px;
     position: relative;
     clip-path: url(#clippath);
+    touch-action: none;
 }
 
 #outer {
@@ -116,6 +119,7 @@ body {
     grid-template-columns: 1fr;
     gap: 10px;
     margin-top: 20px;
+    color: white;
 }
 
 #colorActions>button {

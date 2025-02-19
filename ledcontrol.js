@@ -37,7 +37,7 @@ var colorPicker = new iro.ColorPicker("#colorPicker", {
 });
 var globalBrightnessPicker = new iro.ColorPicker("#globalBrightnessPicker", {
     width: document.querySelector('#globalBrightnessPicker').clientWidth,
-    color: "#fff",
+    color: "#555",
     borderWidth: 1,
     layout: [
         {
@@ -65,7 +65,7 @@ const lightColors = [];
 const totalLights = 1120; //1120;
 const noiseFilterCount = 10;
 const lightDivs = [];
-let globalBrightness = 1;
+let globalBrightness = 0.3;
 const body = document.querySelector('body');
 const plan = document.querySelector('#plan');
 const lights = document.querySelector('#lights');
@@ -122,8 +122,9 @@ function updateLight(index) {
     if (index !== undefined) {
         const lightDiv = lightDivs[index];
         const color = lightColors[index];
-        lightDiv.style.background = "radial-gradient(circle, rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + color.a + "), "
-            + "rgba(0, 0, 0, 0.0) 100%)";
+        //lightDiv.style.background = "radial-gradient(circle, rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + color.a + "), "
+        //    + "rgba(0, 0, 0, 0.0) 100%)";
+        lightDiv.style.background = "rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + color.a + ")";
     } else {
         for (let i = 0; i < lightDivs.length; i++) {
             updateLight(i);
@@ -132,9 +133,12 @@ function updateLight(index) {
 }
 
 const alreadyProcessedElementsPerTouch = {};
+let lastTouch = null;
 
 function setupLightTouchEvents() {
     plan.addEventListener('touchmove', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
         const touches = event.touches;
         var indexStart = totalLights;
         var indexEnd = -1;
@@ -147,19 +151,20 @@ function setupLightTouchEvents() {
             const touchY = touch.clientY - plan.getBoundingClientRect().top;
             for (let j = 0; j < lightDivs.length; j++) {
                 const lightDiv = lightDivs[j];
-                if (Math.abs(lightDiv.dataset.centerX - touchX) < 10 && Math.abs(lightDiv.dataset.centerY - touchY) < 10) {
+                const centerX = lightDiv.dataset.centerX;
+                const centerY = lightDiv.dataset.centerY;
+                if (Math.abs(lightDiv.dataset.centerX - touchX) < 20 && Math.abs(lightDiv.dataset.centerY - touchY) < 20) {
                     const index = lightDiv.dataset.index;
                     if (alreadyProcessedElementsPerTouch[touch.identifier][index] === undefined) {
                         alreadyProcessedElementsPerTouch[touch.identifier][index] = true;
-                    } else {
-                        continue;
+                        lightColors[index] = blendColors(lightColors[index], colorPicker.color.rgba);
+                        updateLight(index);
+                        indexStart = Math.min(indexStart, index);
+                        indexEnd = Math.max(indexEnd, index);
                     }
-                    lightColors[index] = blendColors(lightColors[index], colorPicker.color.rgba);
-                    updateLight(index);
-                    indexStart = Math.min(indexStart, index);
-                    indexEnd = Math.max(indexEnd, index);
                 }
             }
+            document.querySelector('#globals').innerHTML = touchX + " " + touchY;
         }
         if (indexEnd >= 0) {
             sendColors(indexStart, indexEnd);
@@ -169,6 +174,7 @@ function setupLightTouchEvents() {
         for (let i = 0; i < event.changedTouches.length; i++) {
             delete alreadyProcessedElementsPerTouch[event.changedTouches[i].identifier];
         }
+        lastTouch = null;
     });
 }
 
@@ -276,8 +282,8 @@ function sendWledRequest(jsonRequest) {
         });
     }
 
-    //wledRequestQueue.push(xhrFunc);
-    console.info("Sending request: " + jsonRequest);
+    wledRequestQueue.push(xhrFunc);
+    //console.info("Sending request: " + jsonRequest);
 }
 
 function sendRequestQueue() {
